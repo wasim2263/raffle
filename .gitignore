@@ -6,3 +6,4 @@ env
 *.iml
 dist
 .idea
+.env
