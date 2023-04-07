@@ -4,3 +4,4 @@ isort==5.9.*
 Django==3.2.*
 pytest-django==4.4.*
 djangorestframework==3.12.*
+python-decouple==3.8
