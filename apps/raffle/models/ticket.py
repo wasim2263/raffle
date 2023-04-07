@@ -1,4 +1,5 @@
 import time
+import uuid
 
 from django.core.signing import Signer
 from django.db import models
@@ -18,6 +19,7 @@ def generate_verification_code():
 
 
 class Ticket(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     raffle = models.ForeignKey(Raffle, on_delete=models.CASCADE)
     ticket_number = models.PositiveIntegerField()
     verification_code = models.CharField(max_length=100, blank=True, null=True)
