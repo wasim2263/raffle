@@ -1,10 +1,11 @@
 # views.py
 from django.db import transaction
+from django.utils.decorators import method_decorator
 from rest_framework import viewsets
 from rest_framework.response import Response
 
+from .decorators import manager_ips_only
 from .models import Prize, Raffle
-from .permissions import ManagerIPsOnly
 from .serializers import PrizeSerializer, RaffleSerializer
 
 
@@ -16,8 +17,8 @@ class PrizeViewSet(viewsets.ModelViewSet):
 class RaffleViewSet(viewsets.ModelViewSet):
     queryset = Raffle.objects.order_by('-created').all()
     serializer_class = RaffleSerializer
-    # permission_classes = [ManagerIPsOnly]
 
+    @method_decorator(manager_ips_only)
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
