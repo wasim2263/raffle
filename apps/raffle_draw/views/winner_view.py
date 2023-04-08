@@ -28,10 +28,9 @@ class WinnerView(APIView):
                     winners_drawn=True)
                 if update_raffle > 0:
                     raffle = Raffle.objects.get(id=raffle_id)
-                    ticket_number = raffle.total_tickets - raffle.available_tickets
-                    # Create Prize objects and associate with Raffle
-                    tickets = Ticket.objects.all()
-                    serializer = TicketSerializer(tickets)
+                    raffle.draw()
+                    tickets = raffle.winners()
+                    serializer = TicketSerializer(tickets, many=True)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'error': 'Your ip address has already participated in this raffle'},

@@ -11,3 +11,6 @@ class Prize(UUIDModel,TimeStampedModel):
     raffle = models.ForeignKey(Raffle, on_delete=models.CASCADE, null=True,blank=True, related_name='prizes')
     name = models.CharField(max_length=255)
     amount = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.name

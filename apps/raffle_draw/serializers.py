@@ -33,7 +33,7 @@ class RaffleSerializer(serializers.ModelSerializer):
         return validated_data
 
 class TicketSerializer(serializers.ModelSerializer):
+    prize = serializers.CharField(source='prize.name', required=False)  # Use 'prize.name' as the source to get the 'name' field on the related Prize model
     class Meta:
         model = Ticket
         fields = ('id','ticket_number', 'verification_code', 'ip_address', 'prize', 'raffle_id')
-

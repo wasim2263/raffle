@@ -20,7 +20,7 @@ def generate_verification_code():
 
 
 class Ticket(UUIDModel,TimeStampedModel):
-    raffle = models.ForeignKey(Raffle, on_delete=models.CASCADE)
+    raffle = models.ForeignKey(Raffle, on_delete=models.CASCADE, related_name='tickets')
     ticket_number = models.PositiveIntegerField()
     verification_code = models.CharField(max_length=100, blank=True, null=True)
     ip_address = models.CharField(max_length=255)
