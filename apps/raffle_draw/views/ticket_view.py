@@ -1,3 +1,4 @@
+from django.db import IntegrityError, transaction
 from django.db.models import F
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
@@ -23,19 +24,19 @@ class TicketViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.Lis
             return Response({'error': 'Raffle ID is required.'}, status=HTTP_400_BAD_REQUEST)
 
         client_ip = request.META.get('REMOTE_ADDR')
-        print(client_ip)
-        if Ticket.objects.filter(raffle_id=raffle_id, ip_address=client_ip).exists():
+        try:
+            with transaction.atomic():
+                update_raffle = Raffle.objects.filter(id=raffle_id, available_tickets__gt=0).update(
+                    available_tickets=F('available_tickets') - 1)
+                if update_raffle > 0:
+                    raffle = Raffle.objects.get(id=raffle_id)
+                    ticket_number = raffle.total_tickets - raffle.available_tickets
+                    # Create Prize objects and ass
+                    ticket = Ticket(raffle=raffle, ticket_number=ticket_number, ip_address=client_ip)
+                    ticket.save()
+                    serializer = self.get_serializer(ticket)
+                    return Response(serializer.data, status=HTTP_201_CREATED)
+        except Exception as e:
             return Response({'error': 'Your ip address has already participated in this raffle'},
                             status=HTTP_403_FORBIDDEN)
-
-        update_raffle = Raffle.objects.filter(id=raffle_id, available_tickets__gt=0).update(
-            available_tickets=F('available_tickets') - 1)
-
-        if update_raffle > 0:
-            raffle = Raffle.objects.get(id=raffle_id)
-            ticket_number = raffle.total_tickets - raffle.available_tickets
-            ticket = Ticket(raffle=raffle, ticket_number=ticket_number, ip_address=client_ip)
-            ticket.save()
-            serializer = self.get_serializer(ticket)
-            return Response(serializer.data, status=HTTP_201_CREATED)
         return Response({'error': 'Tickets to this raffle are no longer available'}, status=HTTP_410_GONE)

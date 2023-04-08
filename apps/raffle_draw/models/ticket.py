@@ -27,7 +27,7 @@ class Ticket(UUIDModel,TimeStampedModel):
     prize = models.ForeignKey(Prize, on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
-        unique_together = ('raffle', 'verification_code')
+        unique_together = (('raffle', 'verification_code'), ('raffle', 'ip_address'))
 
     def save(self, *args, **kwargs):
         """Override the save method to generate and save verification code."""
