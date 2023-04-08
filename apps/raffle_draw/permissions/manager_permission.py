@@ -2,7 +2,6 @@ from django.conf import settings
 from rest_framework import permissions
 
 
-
 class ManagerIPsOnly(permissions.BasePermission):
     """
     Custom permission to allow access only from IP addresses listed in MANAGER_IPS setting.

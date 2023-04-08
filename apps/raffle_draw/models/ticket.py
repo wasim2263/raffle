@@ -4,7 +4,7 @@ import uuid
 from django.core.signing import Signer
 from django.db import models
 
-from apps.raffle.models import Raffle, Prize
+from apps.raffle_draw.models import Raffle, Prize
 
 
 def generate_verification_code():

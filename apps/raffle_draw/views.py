@@ -3,7 +3,6 @@ from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from project.settings import  MANAGER_IPS
 from .models import Prize, Raffle
 from .permissions import ManagerIPsOnly
 from .serializers import PrizeSerializer, RaffleSerializer
@@ -19,14 +18,8 @@ class RaffleViewSet(viewsets.ModelViewSet):
     serializer_class = RaffleSerializer
     permission_classes = [ManagerIPsOnly]
 
+    @transaction.atomic
     def create(self, request, *args, **kwargs):
-        client_ip=request.META.get('REMOTE_ADDR')
-        manager_ips =MANAGER_IPS
-        if client_ip not in manager_ips:
-            # Raise an error or return a response indicating that the client IP is not allowed
-            raise serializers.ValidationError(
-                "Access denied. Client IP is not allowed to access raffle manager endpoints.")
-
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         prizes_data = serializer.validated_data.pop('prizes')

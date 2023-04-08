@@ -16,7 +16,7 @@ def test_raffle_list(client, raffle_factory):
 
 
 def test_raffle_detail(client, raffle_factory, get_ticket):
-    """Get raffle details by id counting available tickets"""
+    """Get raffle_draw details by id counting available tickets"""
 
     raffle = raffle_factory(name="Barfoo", total_tickets=20)
     resp = client.get(f"/raffles/{raffle['id']}/")

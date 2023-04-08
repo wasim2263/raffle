@@ -7,7 +7,7 @@ from rest_framework.test import APIClient
 
 MANAGER_IP = os.environ.get('MANAGER_IPS', '123.123.123.123,127.0.0.2').split(',')[0]
 DEFAULT_RAFFLE = {
-    "name": "Foobar raffle",
+    "name": "Foobar raffle_draw",
     "total_tickets": 15,
     "prizes": [
         {"name": "invisibility", "amount": 1},
@@ -42,7 +42,7 @@ def make_raffle(client, **overrides):
                        data=DEFAULT_RAFFLE | overrides,
                        REMOTE_ADDR=MANAGER_IP)
     if resp.status_code != 201:
-        raise Exception('Unable to create a raffle')
+        raise Exception('Unable to create a raffle_draw')
     return resp.json()
 
 
@@ -67,7 +67,7 @@ def get_ticket(client):
         resp = client.post(f"/raffles/{raffle_id}/participate/",
                            REMOTE_ADDR=make_ip())
         if resp.status_code != 201:
-            raise Exception('Unable to get a ticket to the raffle')
+            raise Exception('Unable to get a ticket to the raffle_draw')
         return resp.json()
     return _inner
 

@@ -43,7 +43,7 @@ INSTALLED_APPS = [
 
 ]
 INSTALLED_APPS += [
-    'apps.raffle'
+    'apps.raffle_draw'
 ]
 
 MIDDLEWARE = [

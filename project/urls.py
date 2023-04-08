@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from apps.raffle.views import RaffleViewSet, PrizeViewSet
+from apps.raffle_draw.views import RaffleViewSet, PrizeViewSet
 
 router = DefaultRouter()
 router.register(r'raffles', RaffleViewSet)

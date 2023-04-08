@@ -2,7 +2,7 @@ import uuid
 
 from django.db import models
 
-from apps.raffle.models.raffle import Raffle
+from apps.raffle_draw.models.raffle import Raffle
 
 
 # Create your models here.
