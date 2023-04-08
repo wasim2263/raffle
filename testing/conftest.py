@@ -4,7 +4,6 @@ import os
 import pytest
 from rest_framework.test import APIClient
 
-
 MANAGER_IP = os.environ.get('MANAGER_IPS', '123.123.123.123,127.0.0.2').split(',')[0]
 DEFAULT_RAFFLE = {
     "name": "Foobar raffle_draw",
@@ -24,6 +23,7 @@ class RaffleClient(APIClient):
 class IncrementingIpFactory:
     def __init__(self):
         self.num = 0x01000000
+        print('calling init---', self.num)
 
     def __call__(self):
         self.num += 1
@@ -69,6 +69,7 @@ def get_ticket(client):
         if resp.status_code != 201:
             raise Exception('Unable to get a ticket to the raffle_draw')
         return resp.json()
+
     return _inner
 
 
@@ -81,6 +82,7 @@ def raffle(client):
 def raffle_factory(client):
     def _factory(**overrides):
         return make_raffle(client, **overrides)
+
     return _factory
 
 

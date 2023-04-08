@@ -1,6 +1,6 @@
 # serializers.py
 from rest_framework import serializers
-from .models import Prize, Raffle
+from .models import Prize, Raffle, Ticket
 
 
 class PrizeSerializer(serializers.ModelSerializer):
@@ -31,3 +31,9 @@ class RaffleSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Too many prizes")
 
         return validated_data
+
+class TicketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ('id','ticket_number', 'verification_code', 'ip_address', 'prize', 'raffle_id')
+

@@ -14,6 +14,7 @@ def manager_ips_only(view_func):
 
         # Get the client IP address from request.META
         client_ip = request.META.get('REMOTE_ADDR')
+        print(client_ip)
 
         # Validate if client IP is in MANAGER_IPS
         if client_ip not in manager_ips:

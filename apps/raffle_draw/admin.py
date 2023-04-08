@@ -8,6 +8,8 @@ class RaffleAdmin(admin.ModelAdmin):
     list_display = (['name'])
 class PrizeAdmin(admin.ModelAdmin):
     list_display = (['name'])
+class TicketAdmin(admin.ModelAdmin):
+    list_display = (['raffle', 'verification_code'])
 
 
 
@@ -15,3 +17,4 @@ class PrizeAdmin(admin.ModelAdmin):
 
 admin.site.register(Raffle, RaffleAdmin)
 admin.site.register(Prize, PrizeAdmin)
+admin.site.register(Ticket, TicketAdmin)
