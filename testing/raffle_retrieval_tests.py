@@ -5,6 +5,7 @@ def test_raffle_list(client, raffle_factory):
     """List raffles sorted by creation time in descending order"""
 
     resp = client.get("/raffles/")
+    print(resp.data)
     assert resp.status_code == 200, unexpected_response_error(resp)
     assert len(resp.json()) == 0
 

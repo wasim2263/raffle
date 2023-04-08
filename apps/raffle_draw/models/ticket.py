@@ -3,6 +3,7 @@ import uuid
 
 from django.core.signing import Signer
 from django.db import models
+from model_utils.models import TimeStampedModel
 
 from apps.raffle_draw.models import Raffle, Prize
 
@@ -18,7 +19,7 @@ def generate_verification_code():
     return unique_string
 
 
-class Ticket(models.Model):
+class Ticket(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     raffle = models.ForeignKey(Raffle, on_delete=models.CASCADE)
     ticket_number = models.PositiveIntegerField()

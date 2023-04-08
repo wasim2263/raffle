@@ -14,9 +14,9 @@ class PrizeViewSet(viewsets.ModelViewSet):
 
 
 class RaffleViewSet(viewsets.ModelViewSet):
-    queryset = Raffle.objects.all()
+    queryset = Raffle.objects.order_by('-created').all()
     serializer_class = RaffleSerializer
-    permission_classes = [ManagerIPsOnly]
+    # permission_classes = [ManagerIPsOnly]
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
