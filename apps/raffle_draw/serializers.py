@@ -1,4 +1,5 @@
 # serializers.py
+from django.core.signing import Signer
 from rest_framework import serializers
 from .models import Prize, Raffle, Ticket
 
@@ -32,8 +33,19 @@ class RaffleSerializer(serializers.ModelSerializer):
 
         return validated_data
 
+class VerificationCodeField(serializers.Field):
+    def to_representation(self, value):
+        signer = Signer()
+        return signer.unsign(value)
+
+class PrizeField(serializers.Field):
+    def to_representation(self, prize):
+        if prize:
+            return prize.name
+        return None
 class TicketSerializer(serializers.ModelSerializer):
-    prize = serializers.CharField(source='prize.name', required=False)  # Use 'prize.name' as the source to get the 'name' field on the related Prize model
+    prize = PrizeField(read_only=True)
+    verification_code = VerificationCodeField(read_only=True)
     class Meta:
         model = Ticket
-        fields = ('id','ticket_number', 'verification_code', 'ip_address', 'prize', 'raffle_id')
+        fields = ('id','ticket_number', 'verification_code', 'ip_address', 'prize', 'raffle_id', 'has_won')

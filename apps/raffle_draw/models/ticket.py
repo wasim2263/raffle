@@ -25,6 +25,7 @@ class Ticket(UUIDModel,TimeStampedModel):
     verification_code = models.CharField(max_length=100, blank=True, null=True)
     ip_address = models.CharField(max_length=255)
     prize = models.ForeignKey(Prize, on_delete=models.SET_NULL, blank=True, null=True)
+    has_won = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (('raffle', 'verification_code'), ('raffle', 'ip_address'))

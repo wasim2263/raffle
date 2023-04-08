@@ -7,7 +7,6 @@ def test_verify_winning_tickets(client, raffle, manager_ip, get_ticket):
         (t['ticket_number'], t)
         for t in [get_ticket(raffle['id']) for _ in range(raffle['total_tickets'])]
     )
-
     wins = client.post(f"/raffles/{raffle['id']}/winners/",
                        REMOTE_ADDR=manager_ip).json()
 
@@ -41,6 +40,7 @@ def test_verify_winning_tickets(client, raffle, manager_ip, get_ticket):
         })
         assert resp.status_code == 200, unexpected_response_error(resp)
         data = resp.json()
+        print(data)
         assert data['has_won'] is False
         assert data['prize'] is None
 

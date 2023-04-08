@@ -8,7 +8,7 @@ from apps.raffle_draw.models import Ticket, Raffle
 from apps.raffle_draw.serializers import TicketSerializer
 
 
-class TicketView(APIView):
+class TicketApiView(APIView):
     """
     Viewset for handling raffle tickets.
     """

@@ -1,3 +1,4 @@
-from .raffle_view import RaffleViewSet
-from .ticket_view import TicketView
-from .winner_view import WinnerView
+from .raffle_view import RaffleApiViewSet
+from .ticket_view import TicketApiView
+from .winner_view import WinnerApiView
+from .verify_ticket_view import VerifyTicketAPIView

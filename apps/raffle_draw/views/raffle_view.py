@@ -9,7 +9,7 @@ from apps.raffle_draw.models import Prize, Raffle
 from apps.raffle_draw.serializers import RaffleSerializer
 
 
-class RaffleViewSet(viewsets.ModelViewSet):
+class RaffleApiViewSet(viewsets.ModelViewSet):
     queryset = Raffle.objects.order_by('-created').all()
     serializer_class = RaffleSerializer
     @transaction.atomic

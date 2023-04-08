@@ -12,7 +12,7 @@ class Raffle(UUIDModel, TimeStampedModel):
     winners_drawn = models.BooleanField(default=False)
 
     def winners(self):
-        return self.tickets.filter(prize__isnull=False)
+        return self.tickets.filter(prize__isnull=False, has_won=True)
 
     def draw(self):
         prizes = self.prizes.all()
@@ -34,4 +34,5 @@ class Raffle(UUIDModel, TimeStampedModel):
         from apps.raffle_draw.models import Ticket
         for winners_ticket in winners_tickets:
             winners_ticket.prize = all_winners_prize[winners_ticket.ticket_number]
-        Ticket.objects.bulk_update(winners_tickets, ['prize'])
+            winners_ticket.has_won=True
+        Ticket.objects.bulk_update(winners_tickets, ['prize', 'has_won'])
