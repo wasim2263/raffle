@@ -13,7 +13,7 @@ class RaffleViewSet(viewsets.ModelViewSet):
     queryset = Raffle.objects.order_by('-created').all()
     serializer_class = RaffleSerializer
     @transaction.atomic
-    # @method_decorator(manager_ips_only)
+    @method_decorator(manager_ips_only)
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)

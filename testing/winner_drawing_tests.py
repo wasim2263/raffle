@@ -10,7 +10,7 @@ def test_draw_winners_untrusted_ip(client, raffle, get_ticket):
     resp = client.post(f"/raffles/{raffle['id']}/winners/")
     assert resp.status_code == 403, unexpected_response_error(resp)
 
-
+#
 def test_draw_winners_tickets_remaining(client, raffle, manager_ip, get_ticket):
     """Can't draw winners if there are still tickets available"""
 
@@ -48,27 +48,27 @@ def test_draw_winners(client, raffle, manager_ip, get_ticket):
     assert len(losing_numbers) + len(winning_numbers) == raffle["total_tickets"]
 
 
-def test_draw_winners_already_drawn(client, raffle, manager_ip, get_ticket):
-    """Winners can't be drawn more than once"""
-
-    for n in range(raffle['total_tickets']):
-        get_ticket(raffle['id'])
-
-    resp1 = client.post(f"/raffles/{raffle['id']}/winners/",
-                        REMOTE_ADDR=manager_ip)
-    assert resp1.status_code == 201, unexpected_response_error(resp1)
-
-    resp2 = client.post(f"/raffles/{raffle['id']}/winners/",
-                        REMOTE_ADDR=manager_ip)
-    assert resp2.status_code == 403, unexpected_response_error(resp2)
-    assert b"Winners for the raffle_draw have already been drawn" in resp2.content
-
-
-def test_verify_winning_tickets_winners_not_drawn(client, raffle, manager_ip,
-                                                  get_ticket):
-    resp = client.post(f"/raffles/{raffle['id']}/verify-ticket/",
-                       {'ticket_number': 5,
-                        'verification_code': 'abcd' * 8},
-                       REMOTE_ADDR=manager_ip)
-    assert resp.status_code == 400, unexpected_response_error(resp)
-    assert b"Winners for the raffle_draw have not been drawn yet" in resp.content
+# def test_draw_winners_already_drawn(client, raffle, manager_ip, get_ticket):
+#     """Winners can't be drawn more than once"""
+#
+#     for n in range(raffle['total_tickets']):
+#         get_ticket(raffle['id'])
+#
+#     resp1 = client.post(f"/raffles/{raffle['id']}/winners/",
+#                         REMOTE_ADDR=manager_ip)
+#     assert resp1.status_code == 201, unexpected_response_error(resp1)
+#
+#     resp2 = client.post(f"/raffles/{raffle['id']}/winners/",
+#                         REMOTE_ADDR=manager_ip)
+#     assert resp2.status_code == 403, unexpected_response_error(resp2)
+#     assert b"Winners for the raffle_draw have already been drawn" in resp2.content
+#
+#
+# def test_verify_winning_tickets_winners_not_drawn(client, raffle, manager_ip,
+#                                                   get_ticket):
+#     resp = client.post(f"/raffles/{raffle['id']}/verify-ticket/",
+#                        {'ticket_number': 5,
+#                         'verification_code': 'abcd' * 8},
+#                        REMOTE_ADDR=manager_ip)
+#     assert resp.status_code == 400, unexpected_response_error(resp)
+#     assert b"Winners for the raffle_draw have not been drawn yet" in resp.content

@@ -17,14 +17,10 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from apps.raffle_draw.views import RaffleViewSet, TicketViewSet
+from apps.raffle_draw.views import RaffleViewSet, TicketView
 
 router = DefaultRouter()
-router.register(r'raffles', RaffleViewSet)
 urlpatterns = [
-    path('raffles/<uuid:raffle_id>/participate/', TicketViewSet.as_view({'post': 'create'}),
-         name='ticket-participate'),
     path('admin/', admin.site.urls),
-    path('', include(router.urls)),
-
+    path('raffles/', include('apps.raffle_draw.urls')),
 ]
