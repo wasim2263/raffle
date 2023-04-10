@@ -10,7 +10,7 @@ from apps.raffle_draw.serializers import TicketSerializer
 
 class TicketApiView(APIView):
     """
-    Api View for handling raffle tickets.
+    Api View for handling raffle tickets ie participants.
     """
 
     def post(self, request, raffle_id=None):

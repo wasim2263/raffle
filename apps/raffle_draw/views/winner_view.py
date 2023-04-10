@@ -14,14 +14,11 @@ from apps.raffle_draw.serializers import TicketSerializer
 
 
 class WinnerApiView(APIView, PageNumberPagination):
-    """
-    Api view for drawing winners.
-    """
 
-    # @method_decorator(manager_ips_only)
+    @method_decorator(manager_ips_only)
     def post(self, request, raffle_id=None):
         """
-        Create a raffle ticket.
+        Draw winners
         """
         page_size = 100
 
@@ -55,14 +52,15 @@ class WinnerApiView(APIView, PageNumberPagination):
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request, raffle_id=None):
+        """
+        Get winner list
+        """
         try:
             raffle = Raffle.objects.get(id=raffle_id)
         except Raffle.DoesNotExist:
-            return Response({'error': 'Raffle does not exist.'},
-                            status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Raffle does not exist.'}, status=status.HTTP_404_NOT_FOUND)
         if not raffle.winners_drawn:
-            return Response({'error': "Winners for the raffle have not drawn yet."},
-                            status=status.HTTP_403_FORBIDDEN)
+            return Response({'error': "Winners for the raffle have not drawn yet."}, status=status.HTTP_403_FORBIDDEN)
         tickets = raffle.winners()
         results = self.paginate_queryset(tickets, request, view=self)
         serializer = TicketSerializer(results, many=True)
