@@ -4,24 +4,26 @@ from django.db import IntegrityError, transaction
 from django.db.models import F
 from django.utils.decorators import method_decorator
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from apps.raffle_draw.decorators import manager_ips_only
-from apps.raffle_draw.models import Ticket, Raffle
+from apps.raffle_draw.models import Raffle
 from apps.raffle_draw.serializers import TicketSerializer
 
 
-class WinnerApiView(APIView):
+class WinnerApiView(APIView, PageNumberPagination):
     """
     Api view for drawing winners.
     """
 
-    @method_decorator(manager_ips_only)
+    # @method_decorator(manager_ips_only)
     def post(self, request, raffle_id=None):
         """
         Create a raffle ticket.
         """
+        page_size = 100
 
         if not raffle_id:
             return Response({'error': 'Raffle ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -51,3 +53,17 @@ class WinnerApiView(APIView):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def get(self, request, raffle_id=None):
+        try:
+            raffle = Raffle.objects.get(id=raffle_id)
+        except Raffle.DoesNotExist:
+            return Response({'error': 'Raffle does not exist.'},
+                            status=status.HTTP_404_NOT_FOUND)
+        if not raffle.winners_drawn:
+            return Response({'error': "Winners for the raffle have not drawn yet."},
+                            status=status.HTTP_403_FORBIDDEN)
+        tickets = raffle.winners()
+        results = self.paginate_queryset(tickets, request, view=self)
+        serializer = TicketSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
