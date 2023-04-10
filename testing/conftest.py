@@ -5,6 +5,7 @@ import pytest
 from rest_framework.test import APIClient
 
 MANAGER_IP = os.environ.get('MANAGER_IPS', '123.123.123.123,127.0.0.2').split(',')[0]
+
 DEFAULT_RAFFLE = {
     "name": "Foobar raffle_draw",
     "total_tickets": 15,

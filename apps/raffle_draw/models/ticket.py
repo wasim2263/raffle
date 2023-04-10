@@ -25,7 +25,7 @@ class Ticket(UUIDModel,TimeStampedModel):
     has_won = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = (('raffle', 'verification_code'), ('raffle', 'ip_address'))
+        unique_together = (('raffle', 'verification_code'), ('raffle', 'ip_address'), ('raffle', 'ticket_number'))
 
     def save(self, *args, **kwargs):
         """Override the save method to generate and save verification code."""

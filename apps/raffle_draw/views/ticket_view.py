@@ -1,3 +1,5 @@
+import random
+
 from django.db import IntegrityError, transaction
 from django.db.models import F
 from rest_framework import status
@@ -27,8 +29,11 @@ class TicketApiView(APIView):
                     available_tickets=F('available_tickets') - 1)
                 if update_raffle > 0:
                     raffle = Raffle.objects.get(id=raffle_id)
-                    ticket_number = raffle.total_tickets - raffle.available_tickets
-                    ticket = Ticket(raffle=raffle, ticket_number=ticket_number, ip_address=client_ip)
+                    used_tickets = raffle.tickets.values_list('ticket_number',flat=True)
+                    tickets = [ticket_number for ticket_number in range(1, raffle.total_tickets + 1)]
+                    available_tickets = list(set(tickets) - set(used_tickets))
+                    ticket = random.sample(available_tickets, k=1)[0]
+                    ticket = Ticket(raffle=raffle, ticket_number=ticket, ip_address=client_ip)
                     ticket.save()
                     serializer = TicketSerializer(ticket)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -40,4 +45,5 @@ class TicketApiView(APIView):
             return Response({'error': 'Your ip address has already participated in this raffle.'},
                             status=status.HTTP_403_FORBIDDEN)
         except Exception as e:
+            print(e)
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
