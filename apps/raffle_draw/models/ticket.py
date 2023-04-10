@@ -10,10 +10,7 @@ from apps.raffle_draw.models import Raffle, Prize
 
 def generate_verification_code():
     """Generate a unique string based on timestamps."""
-    # Get the current timestamp
     timestamp = float(time.time())
-
-    # Convert the timestamp to a string
     unique_string = str(timestamp).replace('.', '')[-12:]
 
     return unique_string

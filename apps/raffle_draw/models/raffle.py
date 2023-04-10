@@ -4,7 +4,6 @@ from django.db import models
 from model_utils.models import TimeStampedModel, UUIDModel
 
 
-# Create your models here.
 class Raffle(UUIDModel, TimeStampedModel):
     name = models.CharField(max_length=255)
     total_tickets = models.PositiveIntegerField()
@@ -22,17 +21,19 @@ class Raffle(UUIDModel, TimeStampedModel):
             prize_winners = random.sample(tickets, k=prize.amount)
             tickets = list(set(tickets) - set(prize_winners))
             for winner in prize_winners:
+                # assign prize to the ticket number
                 all_winners_prize[winner] = prize
-        winners_tickets = self.__get_winners_tickets(all_winners_prize.keys())
-        self.__update_winner_tickets(winners_tickets, all_winners_prize)
-        # print(winners_tickets)
+        winners_tickets = self._get_winners_tickets(all_winners_prize.keys())
+        self._update_winner_tickets(winners_tickets, all_winners_prize)
 
-    def __get_winners_tickets(self, ticket_numbers):
+    def _get_winners_tickets(self, ticket_numbers):
         return self.tickets.filter(ticket_number__in=ticket_numbers)
 
-    def __update_winner_tickets(self, winners_tickets, all_winners_prize):
+    @staticmethod
+    def _update_winner_tickets(winners_tickets, all_winners_prize):
+        # To avoid circular import using it locally
         from apps.raffle_draw.models import Ticket
         for winners_ticket in winners_tickets:
             winners_ticket.prize = all_winners_prize[winners_ticket.ticket_number]
-            winners_ticket.has_won=True
-        Ticket.objects.bulk_update(winners_tickets, ['prize', 'has_won'])
+            winners_ticket.has_won = True
+        Ticket.objects.bulk_update(winners_tickets, ['prize', 'has_won'], batch_size=200)
