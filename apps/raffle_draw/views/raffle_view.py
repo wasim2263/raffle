@@ -1,18 +1,18 @@
 # raffle_view.py
 from django.db import transaction
 from django.utils.decorators import method_decorator
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 from apps.raffle_draw.decorators import manager_ips_only
-from apps.raffle_draw.models import Prize, Raffle
+from apps.raffle_draw.models import Raffle
 from apps.raffle_draw.serializers import RaffleSerializer
 
 
 class RaffleApiViewSet(viewsets.ModelViewSet):
-    queryset = Raffle.objects.order_by('-created').all()
+    queryset = Raffle.objects.order_by('-created')
     serializer_class = RaffleSerializer
-    @transaction.atomic
+
     @method_decorator(manager_ips_only)
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -22,15 +22,14 @@ class RaffleApiViewSet(viewsets.ModelViewSet):
         total_tickets = serializer.validated_data['total_tickets']
         prizes_data = serializer.validated_data['prizes']
         # Create Raffle object
-        raffle = Raffle(name=name, total_tickets=total_tickets, available_tickets=total_tickets)
-        raffle.save()
         try:
             with transaction.atomic():
+                # can be used get_or_create if considered uniqueness. lot of options to consider
+                raffle = Raffle(name=name, total_tickets=total_tickets, available_tickets=total_tickets)
+                raffle.save()
                 # Create Prize objects and associate with Raffle
-                for prize_data in prizes_data:
-                    prize = Prize(name=prize_data['name'], amount=prize_data['amount'], raffle=raffle)
-                    prize.save()
+                raffle.store_prizes(prizes_data)
                 serializer = self.get_serializer(raffle)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as exception:
-            raffle.delete()
-        return Response(serializer.data, status=201)
+            return Response(serializer.data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

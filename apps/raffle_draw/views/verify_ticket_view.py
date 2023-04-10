@@ -18,15 +18,15 @@ class VerifyTicketAPIView(APIView):
 
         if not ticket_number or not verification_code:
             return Response({'error': 'Ticket number and verification code are required.'}, status=HTTP_400_BAD_REQUEST)
-        raffle = Raffle.objects.filter(id=raffle_id, winners_drawn=True).first()
-        if not raffle:
-            return Response({'error': 'Winners for the raffle_draw have not been drawn yet.'}, status=HTTP_400_BAD_REQUEST)
-
         try:
-            ticket = Ticket.objects.get(raffle_id=raffle_id,ticket_number=ticket_number, verification_code=verification_code)
+            Raffle.objects.get(id=raffle_id, winners_drawn=True)
+        except Raffle.DoesNotExist:
+            return Response({'error': 'Winners for the raffle have not been drawn yet.'}, status=HTTP_400_BAD_REQUEST)
+        try:
+            ticket = Ticket.objects.get(raffle_id=raffle_id, ticket_number=ticket_number,
+                                        verification_code=verification_code)
         except Ticket.DoesNotExist:
             return Response({'error': 'Invalid verification code.'}, status=HTTP_400_BAD_REQUEST)
 
         serializer = TicketSerializer(ticket)
         return Response(serializer.data, status=HTTP_200_OK)
-

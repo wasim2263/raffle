@@ -37,3 +37,11 @@ class Raffle(UUIDModel, TimeStampedModel):
             winners_ticket.prize = all_winners_prize[winners_ticket.ticket_number]
             winners_ticket.has_won = True
         Ticket.objects.bulk_update(winners_tickets, ['prize', 'has_won'], batch_size=200)
+
+    def store_prizes(self, prizes_data):
+        from apps.raffle_draw.models import Prize
+        prizes = []
+        for prize_data in prizes_data:
+            prize = Prize(name=prize_data['name'], amount=prize_data['amount'], raffle=self)
+            prizes.append(prize)
+        Prize.objects.bulk_create(prizes, batch_size=200)

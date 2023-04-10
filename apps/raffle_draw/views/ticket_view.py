@@ -12,6 +12,7 @@ class TicketApiView(APIView):
     """
     Api View for handling raffle tickets.
     """
+
     def post(self, request, raffle_id=None):
         """
         Create a raffle ticket.
@@ -31,7 +32,12 @@ class TicketApiView(APIView):
                     ticket.save()
                     serializer = TicketSerializer(ticket)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Exception as e:
-            return Response({'error': 'Your ip address has already participated in this raffle'},
+                else:
+                    return Response({'error': 'Tickets to this raffle are no longer available.'},
+                                    status=status.HTTP_410_GONE)
+
+        except IntegrityError:
+            return Response({'error': 'Your ip address has already participated in this raffle.'},
                             status=status.HTTP_403_FORBIDDEN)
-        return Response({'error': 'Tickets to this raffle are no longer available'}, status=status.HTTP_410_GONE)
+        except Exception as e:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

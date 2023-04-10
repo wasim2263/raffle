@@ -14,6 +14,7 @@ class WinnerApiView(APIView):
     """
     Viewset for handling raffle tickets.
     """
+
     @method_decorator(manager_ips_only)
     def post(self, request, raffle_id=None):
         """
@@ -27,19 +28,24 @@ class WinnerApiView(APIView):
             with transaction.atomic():
                 update_raffle = Raffle.objects.filter(id=raffle_id, available_tickets=0, winners_drawn=False).update(
                     winners_drawn=True)
-                raffle = Raffle.objects.filter(id=raffle_id).first()
+                try:
+                    raffle = Raffle.objects.get(id=raffle_id)
+                except Raffle.DoesNotExist:
+                    return Response({'error': 'Raffle does not exist.'},
+                                    status=status.HTTP_404_NOT_FOUND)
                 if update_raffle > 0:
                     raffle.draw()
                     tickets = raffle.winners()
                     serializer = TicketSerializer(tickets, many=True)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
-                elif raffle and raffle.winners_drawn:
-                    return Response({'error': "Winners for the raffle_draw have already been drawn"},
+                elif raffle.winners_drawn:
+                    return Response({'error': "Winners for the raffle have already been drawn."},
                                     status=status.HTTP_403_FORBIDDEN)
-                elif raffle and raffle.available_tickets > 0:
-                    return Response({'error': "Winners can't be drawn when tickets are still available"},
+                elif raffle.available_tickets > 0:
+                    return Response({'error': "Winners can't be drawn when tickets are still available."},
                                     status=status.HTTP_403_FORBIDDEN)
-
+        except IntegrityError:
+            return Response({'error': 'Failed to update raffle status, please try again.'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:
-            return Response({'error': 'Your ip address has already participated in this raffle'},
-                            status=status.HTTP_403_FORBIDDEN)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

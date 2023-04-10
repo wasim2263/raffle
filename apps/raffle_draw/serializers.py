@@ -19,10 +19,10 @@ class RaffleSerializer(serializers.ModelSerializer):
         read_only_fields = ['available_tickets', 'winners_drawn']
 
     def validate(self, data):
+        """
+            Check total prize doesn't exceed the total tickets.
+        """
         validated_data = super().validate(data)
-        """
-        Check total prize doesn't exceed the total tickets.
-        """
         if len(data['prizes']) == 0:
             raise serializers.ValidationError("No prizes")
         prize_count = 0
@@ -33,19 +33,24 @@ class RaffleSerializer(serializers.ModelSerializer):
 
         return validated_data
 
+
 class VerificationCodeField(serializers.Field):
     def to_representation(self, value):
         signer = Signer()
         return signer.unsign(value)
+
 
 class PrizeField(serializers.Field):
     def to_representation(self, prize):
         if prize:
             return prize.name
         return None
+
+
 class TicketSerializer(serializers.ModelSerializer):
     prize = PrizeField(read_only=True)
     verification_code = VerificationCodeField(read_only=True)
+
     class Meta:
         model = Ticket
-        fields = ('id','ticket_number', 'verification_code', 'ip_address', 'prize', 'raffle_id', 'has_won')
+        fields = ('id', 'ticket_number', 'verification_code', 'ip_address', 'prize', 'raffle_id', 'has_won')
