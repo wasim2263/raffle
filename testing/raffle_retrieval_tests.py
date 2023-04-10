@@ -7,12 +7,12 @@ def test_raffle_list(client, raffle_factory):
     resp = client.get("/raffles/")
     print(resp.data)
     assert resp.status_code == 200, unexpected_response_error(resp)
-    assert len(resp.json()) == 0
+    assert len(resp.json()['results']) == 0
 
     raffle_factory(name="Foo")
     raffle_factory(name="Bar")
     raffle_factory(name="Glue")
-    raffles = client.get("/raffles/").json()
+    raffles = client.get("/raffles/").json()['results']
     assert ['Glue', 'Bar', 'Foo'] == [raffle["name"] for raffle in raffles]
 
 

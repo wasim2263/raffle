@@ -1,3 +1,5 @@
+import time
+
 from django.db import IntegrityError, transaction
 from django.db.models import F
 from django.utils.decorators import method_decorator
@@ -12,7 +14,7 @@ from apps.raffle_draw.serializers import TicketSerializer
 
 class WinnerApiView(APIView):
     """
-    Viewset for handling raffle tickets.
+    Api view for drawing winners.
     """
 
     @method_decorator(manager_ips_only)
