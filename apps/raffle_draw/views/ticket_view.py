@@ -10,9 +10,8 @@ from apps.raffle_draw.serializers import TicketSerializer
 
 class TicketApiView(APIView):
     """
-    Viewset for handling raffle tickets.
+    Api View for handling raffle tickets.
     """
-
     def post(self, request, raffle_id=None):
         """
         Create a raffle ticket.
@@ -28,7 +27,6 @@ class TicketApiView(APIView):
                 if update_raffle > 0:
                     raffle = Raffle.objects.get(id=raffle_id)
                     ticket_number = raffle.total_tickets - raffle.available_tickets
-                    # Create Prize objects and associate with Raffle
                     ticket = Ticket(raffle=raffle, ticket_number=ticket_number, ip_address=client_ip)
                     ticket.save()
                     serializer = TicketSerializer(ticket)
